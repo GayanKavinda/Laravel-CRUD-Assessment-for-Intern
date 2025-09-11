@@ -29,8 +29,7 @@
             @foreach($products as $product)
             <tr>
                 <td class="p-2">{{ $product->name }}</td>
-                <td class="p-2">{{ product-\>description }}\</td\>
-                    \
+                <td class="p-2">{{ $product->description }}</td>
                 <td class="p-2" \>{{ $product->price }}</td>
                 <td class="p-2">
                     <!-- HINT: Link to view a single product. -->
