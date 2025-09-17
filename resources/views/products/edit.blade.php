@@ -7,7 +7,7 @@
         <div class="p-8 sm:p-10">
             <h1 class="text-4xl font-bold text-gray-900 mb-2 text-center">Edit Product</h1>
             <p class="text-center text-gray-500 mb-8">Update the details for {{ $product->name }}.</p>
-            <form action="{{ route('products.update', $product) }}" method="POST" class="space-y-6">
+            <form action="{{ route('products.update', $product) }}" method="POST" class="space-y-6" enctype="multipart/form-data">
                 @csrf @method('PUT')
                 
                 {{-- Product Name Field --}}
@@ -58,6 +58,25 @@
                         </div>
                     </div>
                     @error('price') 
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p> 
+                    @enderror
+                </div>
+
+                {{-- Product Image Upload Field with Icon and Current Image Preview --}}
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-1-9h4v4m-15 11v-4m4-4h4m4-4H9a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2V9a2 2 0 00-2-2h-6a2 2 0 00-2 2z" />
+                        </svg>
+                        Product Image
+                    </label>
+                    @if ($product->image)
+                        <div class="mb-4">
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-32 w-32 object-cover rounded-lg shadow-md">
+                        </div>
+                    @endif
+                    <input type="file" name="image" id="image" class="w-full border border-gray-300 rounded-lg shadow-sm px-4 py-2.5 bg-gray-50 text-gray-900 placeholder-gray-400 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent @error('image') border-red-500 @enderror">
+                    @error('image') 
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p> 
                     @enderror
                 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product; // HINT: Uses the Product model.
 use Illuminate\Http\Request; // HINT: Handles HTTP requests.
+use Illuminate\Support\Facades\Storage; // HINT: Handles file storage.
 
 class ProductController extends Controller
 {
@@ -19,7 +20,9 @@ class ProductController extends Controller
         // HINT: Checks for a 'search' query parameter.
         if ($request->has('search')) {
             // HINT: Filters products by name.
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%' . $request->search . '%')
+            ->orWhere('description', 'like', '%' . $request->search . '%')
+            ->orWhere('price', 'like', '%' . $request->search . '%');
         }
         
         // HINT: Gets products with pagination.
@@ -50,7 +53,13 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+            $validated['image'] = $imagePath;
+        }
 
         // HINT: Saves the new product.
         Product::create($validated); 
@@ -90,7 +99,16 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $imagePath = $request->file('image')->store('products', 'public');
+            $validated['image'] = $imagePath;
+        }
 
         // HINT: Applies updates to the product.
         $product->update($validated);
@@ -106,6 +124,9 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         // HINT: Deletes the product from the database.
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
         $product->delete();
         
         // HINT: Redirects to the index with a deletion message.

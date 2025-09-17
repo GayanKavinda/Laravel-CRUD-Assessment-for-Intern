@@ -11,7 +11,7 @@ class Product extends Model
         'name',
         'description',
         'price',
-        // 'image' 
+        'image',
     ];
 
     // HINT: Automatically converts database columns to specified data types.
